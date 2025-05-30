@@ -1,7 +1,7 @@
 import React from 'react';
 import { YStack } from 'tamagui';
 import { useRouter } from 'expo-router';
-import { LoginComponent } from '../../../components/login';
+import { LoginComponent } from '../../../components/auth/login';
 
 export default function LoginPage() {
   const router = useRouter();

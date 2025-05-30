@@ -5,6 +5,7 @@ export type ExerciseSummary = {
   id: string,
   exercise?: string,
   summary?: string,
+  attributes?: string[]
 }
 
 export type ExerciseSummaryContext = {
@@ -12,7 +13,7 @@ export type ExerciseSummaryContext = {
   error: any,
   getAllExercises: () => Promise<ExerciseSummary[]>,
   getExercise?: (id: string) => Promise<ExerciseSummary>
-  postMessage: (messsge: string) => Promise<void>
+  postMessage: (message: string) => Promise<void>
 }
 
 
@@ -44,7 +45,7 @@ export default function ExerciseSummaryProvider({children}:any) {
   }} children={children}/>
 }
 
-export function useExerciseSummary() {
+export function useExerciseContext() {
   const context = useContext(ExerciseContext);
   if (context === null) {
     throw new Error('useAuth must be used within an AuthProvider');

@@ -11,41 +11,34 @@ import {
   H2,
   Spinner,
 } from 'tamagui';
-import { useAuth, Credentials } from '../provider/AuthProviders';
+import { useAuth, Credentials } from '../../provider/AuthProviders';
 
-const registerSchema = Yup.object().shape({
+const loginSchema = Yup.object().shape({
   email: Yup.string()
     .email('Invalid email address')
     .required('Email is required'),
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Password is required'),
-  confirmPassword: Yup.string()
-    .required('Please confirm your password')
-    .oneOf([Yup.ref('password')], 'Passwords must match'),
 });
 
-interface RegisterFormValues extends Credentials {
-  confirmPassword: string;
-}
-
-interface RegisterComponentProps {
+interface LoginComponentProps {
   onSuccess?: () => void;
   showTitle?: boolean;
 }
 
-export const RegisterComponent: React.FC<RegisterComponentProps> = ({
+export const LoginComponent: React.FC<LoginComponentProps> = ({
   onSuccess,
   showTitle = true,
 }) => {
-  const { register, isLoading, error } = useAuth();
+  const { login, isLoading, error } = useAuth();
 
-  const handleSubmit = async (values: RegisterFormValues) => {
+  const handleSubmit = async (values: Credentials) => {
     try {
-      await register({ email: values.email, password: values.password });
+      await login(values);
       onSuccess?.();
     } catch (err) {
-      console.error('Registration failed:', err);
+      console.error('Login failed:', err);
     }
   };
 
@@ -54,13 +47,13 @@ export const RegisterComponent: React.FC<RegisterComponentProps> = ({
       <YStack gap="$4">
         {showTitle && (
           <H2 color="$color">
-            Create Account
+            Sign In
           </H2>
         )}
 
         <Formik
-          initialValues={{ email: '', password: '', confirmPassword: '' }}
-          validationSchema={registerSchema}
+          initialValues={{ email: '', password: '' }}
+          validationSchema={loginSchema}
           onSubmit={handleSubmit}
         >
           {({
@@ -119,31 +112,8 @@ export const RegisterComponent: React.FC<RegisterComponentProps> = ({
                 )}
               </YStack>
 
-              <YStack gap="$2">
-                <Text fontSize="$3" fontWeight="500">
-                  Confirm Password
-                </Text>
-                <Input
-                  placeholder="Confirm your password"
-                  value={values.confirmPassword}
-                  onChangeText={handleChange('confirmPassword')}
-                  onBlur={handleBlur('confirmPassword')}
-                  secureTextEntry
-                  borderColor={
-                    touched.confirmPassword && errors.confirmPassword
-                      ? '$red10'
-                      : '$borderColor'
-                  }
-                />
-                {touched.confirmPassword && errors.confirmPassword && (
-                  <Text color="$red10" fontSize="$2">
-                    {errors.confirmPassword}
-                  </Text>
-                )}
-              </YStack>
-
               {error && (
-                <Text color="$red10" fontSize="$3">
+                <Text color="$red10" fontSize="$3" >
                   {error}
                 </Text>
               )}
@@ -151,13 +121,13 @@ export const RegisterComponent: React.FC<RegisterComponentProps> = ({
               <Button
                 onPress={() => handleSubmit()}
                 disabled={!isValid || isLoading}
-                theme="green"
+                theme="blue"
                 size="$4"
               >
-                <XStack gap="$2">
+                <XStack gap="$2" >
                   {isLoading && <Spinner size="small" color="white" />}
                   <Text color="white" fontWeight="600">
-                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                    {isLoading ? 'Signing In...' : 'Sign In'}
                   </Text>
                 </XStack>
               </Button>

@@ -108,6 +108,7 @@ export const EXERCISE_API = {
     //@ts-ignore
       const query = supabase.from("exercises").select("id, exercise:exercise_name, summary, type, attributes")
       const { data } = await query;
+      console.log(data);
       return data;
   },
   postMessage: async(messages: string | string[]) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { YStack } from 'tamagui';
 import { useRouter } from 'expo-router';
-import { RegisterComponent } from '../../../components/register';
+import { RegisterComponent } from '../../../components/auth/register';
 
 export default function RegisterPage() {
   const router = useRouter();
