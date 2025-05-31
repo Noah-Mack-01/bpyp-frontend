@@ -194,8 +194,6 @@ export default function ExerciseDetail({
               </YStack>
 
               <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3">
-                <DisplayRow label="Exercise ID" value={exercise.id} />
-                
                 {isEditing ? (
                   <>
                     <FormField
