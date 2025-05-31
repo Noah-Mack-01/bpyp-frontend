@@ -1,14 +1,24 @@
 import { Mic } from "@tamagui/lucide-icons";
 import { Formik } from "formik"
 import { useExerciseContext as useExerciseContext } from "src/provider/ExerciseProvider"
+import { useJobContext } from "src/provider/JobProvider";
 import { Button, Form, FormTrigger, Input, XStack } from "tamagui"
 
 export default function WorkoutForm() {
   let exerciseContext = useExerciseContext();
+  let jobContext = useJobContext();
+
+  async function postMessage(message: string): Promise<void> {
+    const jobs = await exerciseContext.postMessage(message);
+    if (jobs && jobs.length > 0) {
+      jobContext.placeHolder(jobs[0])
+    }
+  }
+
   return (
       <Formik
         initialValues={{ message: "" }}
-        onSubmit={(values) => exerciseContext.postMessage(values.message)}>
+        onSubmit={(values) => postMessage(values.message)}>
           {({values, handleChange, submitForm, resetForm}) => 
         (<Form style={{marginTop: "10px" }}>
           <XStack style={{marginVertical: 10}} gap="$2" justify={"center"}>
@@ -16,7 +26,6 @@ export default function WorkoutForm() {
           <FormTrigger asChild>
             <Button onMouseLeave={() => {
               submitForm();
-              values.message = ""
             }} icon={Mic} />
           </FormTrigger></XStack>
         </Form>)}

@@ -1,7 +1,8 @@
-import { Redirect, Slot, Stack, useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import { Redirect, Slot, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { useAuth } from "src/provider/AuthProviders";
 import ExerciseProvider from "src/provider/ExerciseProvider";
+import JobProvider from "src/provider/JobProvider";
 
 export default function ProtectedLayout() {
   const authContext = useAuth();
@@ -12,5 +13,11 @@ export default function ProtectedLayout() {
 
   return (!authContext.session) ? 
     <Redirect href={"./login"}/> :
-    (<ExerciseProvider><Slot /></ExerciseProvider>);
+    (
+    <ExerciseProvider>
+      <JobProvider>
+        <Slot />
+      </JobProvider>
+    </ExerciseProvider>
+    );
 }

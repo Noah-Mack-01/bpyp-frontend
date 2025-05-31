@@ -106,18 +106,56 @@ export const AUTH_API = {
 export const EXERCISE_API = {
   getSummary: async () => {
     //@ts-ignore
-      const query = supabase.from("exercises").select("id, exercise:exercise_name, summary, type, attributes")
+      const query = supabase.from("exercises")
+      .select("id, exercise:exercise_name, summary, type, attributes")
+      .order("created_ts", {ascending: false})
       const { data } = await query;
-      console.log(data);
       return data;
   },
   postMessage: async(messages: string | string[]) => {
     console.log("Message received!", messages);
     const messageArray = Array.isArray(messages) ? messages : [messages];
       const query = supabase.from("jobs")
-      .upsert(messageArray.map(m => ({ data: { message: m}})));
+      .upsert(messageArray.map(m => ({ data: { message: m}}))).select();
       const { data, error } = await query;
       if (!!error) throw error
       return data;
+  }
+}
+
+export type Job = {
+  id: string
+  status: string,
+  data: { message: string },
+  error: any,
+  created_at: Date,
+  updated_at: Date,
+  retry_count: number,
+  user_id: string
+}
+
+export const JOB_API = {
+  getPendingJobs: async () => {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const query = supabase.from("jobs")
+      .select("id, status, data, error, created_at, updated_at, retry_count, user_id")
+      .gte("updated_at", fiveMinutesAgo).neq("status","completed").neq("status","failed");
+    const { data, error } = await query;
+    if (!!error) throw error;
+    return data as Job[];
+  },
+  timeoutJob: async (jobID: string) => {
+    const query = supabase.from("jobs")
+      .update({ 
+        status: "failed", 
+        error: "Timed Out",
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", jobID)
+      .select()
+      .single();
+    const { data, error } = await query;
+    if (!!error) throw error;
+    return data as Job;
   }
 }
