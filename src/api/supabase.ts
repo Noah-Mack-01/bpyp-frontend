@@ -112,6 +112,27 @@ export const EXERCISE_API = {
       const { data } = await query;
       return data;
   },
+  getExercise: async (id: string) => {
+    const query = supabase.from("exercises")
+      .select("id, exercise:exercise_name, summary, type, attributes, sets, work, work_type, resistance, resistance_type, duration, created_ts")
+      .eq("id", id)
+      .single();
+    const { data, error } = await query;
+    if (!!error) throw error;
+    return {
+      id: data.id,
+      exercise: data.exercise,
+      summary: data.summary,
+      attributes: data.attributes,
+      sets: data.sets,
+      work: data.work,
+      workUnit: data.work_type,
+      resistance: data.resistance,
+      resistanceUnits: data.resistance_type,
+      duration: data.duration,
+      timeStamp: data.created_ts ? new Date(data.created_ts) : undefined
+    };
+  },
   postMessage: async(messages: string | string[]) => {
     console.log("Message received!", messages);
     const messageArray = Array.isArray(messages) ? messages : [messages];

@@ -4,7 +4,7 @@ import { useExerciseContext as useExerciseContext } from "src/provider/ExerciseP
 import { useJobContext } from "src/provider/JobProvider";
 import { Button, Form, FormTrigger, Input, XStack } from "tamagui"
 
-export default function WorkoutForm() {
+export default function InputBar() {
   let exerciseContext = useExerciseContext();
   let jobContext = useJobContext();
 

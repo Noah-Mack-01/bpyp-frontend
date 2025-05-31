@@ -9,18 +9,28 @@ export type ExerciseSummary = {
   attributes?: string[]
 }
 
+export type Exercise = ExerciseSummary & {
+  sets?: number,
+  work?: number,
+  workUnit?: string
+  resistance?: number,
+  resistanceUnits?: string
+  duration?: string,
+  timeStamp?: Date
+}
+
 export type ExerciseSummaryContext = {
   loading: boolean,
   error: any,
   getAllExercises: () => Promise<ExerciseSummary[]>,
-  getExercise?: (id: string) => Promise<ExerciseSummary>
+  getExercise: (id: string) => Promise<Exercise>
   postMessage: (message: string) => Promise<Job[]>
 }
 
 
 const ExerciseContext = createContext(null as ExerciseSummaryContext | null)
 export default function ExerciseSummaryProvider({children}:any) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null)
   function methodWrapper(func: (...obj: any[]) => Promise<any>): (...obj: any[]) => Promise<any> {  
     return async (...obj: any[]) => {
@@ -41,6 +51,7 @@ export default function ExerciseSummaryProvider({children}:any) {
     loading: isLoading,
     error: error,
     getAllExercises: methodWrapper(EXERCISE_API.getSummary),
+    getExercise: methodWrapper(EXERCISE_API.getExercise),
     postMessage: methodWrapper(EXERCISE_API.postMessage),
   }} children={children}/>
 }

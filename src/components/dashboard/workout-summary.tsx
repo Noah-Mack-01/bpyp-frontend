@@ -1,5 +1,6 @@
 import { Mic, Weight } from "@tamagui/lucide-icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
 import { ExerciseSummary, useExerciseContext } from "src/provider/ExerciseProvider";
 import { useJobContext } from "src/provider/JobProvider";
 import { Button, ListItem, ScrollView, Spinner, XStack, YGroup } from "tamagui";
@@ -7,6 +8,7 @@ import { Button, ListItem, ScrollView, Spinner, XStack, YGroup } from "tamagui";
 export default function WorkoutSummary(props: {} ) {
   let context = useExerciseContext()
   let jobContext = useJobContext();
+  let router = useRouter();
   let [rows, setRows] = useState([] as ExerciseSummary[])
   
   async function getAll() {
@@ -15,11 +17,16 @@ export default function WorkoutSummary(props: {} ) {
     setRows(res ?? []);
     console.log("Clientside jobs: ", jobContext.clientSideJobs)
   }
+
+  const navigateToExercise = (exerciseId: string) => {
+    router.push(`/exercise?eid=${exerciseId}`);
+  };
 useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
+    getAll();
+    let intervalId: number 
     console.log("Beginning polling....") 
       intervalId = setInterval(() => {
-      getAll();
+        getAll();
       }, 2000); // Poll every 2 seconds when active
     
     return () => {
@@ -46,6 +53,8 @@ useEffect(() => {
             <ListItem 
             title={row.exercise} 
             children={row.summary}
+            onPress={() => navigateToExercise(row.id)}
+            pressTheme
             iconAfter={ 
               <XStack gap={"$2"}>
                 {row.attributes?.map((a, k)=>(<Button key={k} disabled={true}>{a}</Button>))}
