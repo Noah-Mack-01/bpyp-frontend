@@ -22,16 +22,21 @@ export default function WorkoutSummary(props: {} ) {
     router.push(`/exercise?eid=${exerciseId}`);
   };
 useEffect(() => {
-    getAll();
-    let intervalId: number 
-    console.log("Beginning polling....") 
-      intervalId = setInterval(() => {
-        getAll();
-      }, 2000); // Poll every 2 seconds when active
+    let timeoutId: number  
+    const longPoll = async () => {
+      try {
+        await getAll();
+      } finally {
+        const delay = 2000;
+        timeoutId = setTimeout(longPoll, delay);
+      }
+    };
+    
+    longPoll();
     
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, []);

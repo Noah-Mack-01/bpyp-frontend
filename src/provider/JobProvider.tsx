@@ -55,14 +55,12 @@ export default function JobProvider({children}:any) {
 
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
-    
+    let timeoutId: number  
     const longPoll = async () => {
       try {
         await refresh();
       } finally {
-        // Schedule next poll with exponential backoff based on job count
-        const delay = pending.length > 0 ? 2000 : 10000; // 2s if jobs exist, 10s if empty
+        const delay = 2000;
         timeoutId = setTimeout(longPoll, delay);
       }
     };

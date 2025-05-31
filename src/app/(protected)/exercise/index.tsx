@@ -7,7 +7,7 @@ import ExerciseDetail from 'src/components/details/exercise-detail';
 
 export default function ExerciseDetailPage() {
   const { eid } = useLocalSearchParams<{ eid: string }>();
-  const { getExercise, loading, error } = useExerciseContext();
+  const { getExercise, detailLoading, error } = useExerciseContext();
   const router = useRouter();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -50,7 +50,7 @@ export default function ExerciseDetailPage() {
     );
   }
 
-  if (loading) {
+  if (detailLoading) {
     console.log("Loading!");
     return (
       <YStack flex={1} justifyContent="center" alignItems="center">

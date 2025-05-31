@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react"
 import { EXERCISE_API } from "src/api/supabase"
-import { Job, useJobContext } from "./JobProvider"
 
 export type ExerciseSummary = {
   id: string,
@@ -21,15 +20,17 @@ export type Exercise = ExerciseSummary & {
 
 export type ExerciseSummaryContext = {
   loading: boolean,
+  detailLoading: boolean,
   error: any,
   getAllExercises: () => Promise<ExerciseSummary[]>,
   getExercise: (id: string) => Promise<Exercise>
-  postMessage: (message: string) => Promise<Job[]>
+  postMessage: (message: string) => Promise<any[]>
 }
 
 
 const ExerciseContext = createContext(null as ExerciseSummaryContext | null)
-export default function ExerciseSummaryProvider({children}:any) {
+export default function ExerciseProvider({children}:any) {
+  const [detailLoading, setDetailLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null)
   function methodWrapper(func: (...obj: any[]) => Promise<any>): (...obj: any[]) => Promise<any> {  
@@ -49,6 +50,7 @@ export default function ExerciseSummaryProvider({children}:any) {
 
   return <ExerciseContext.Provider value={{
     loading: isLoading,
+    detailLoading,
     error: error,
     getAllExercises: methodWrapper(EXERCISE_API.getSummary),
     getExercise: methodWrapper(EXERCISE_API.getExercise),
