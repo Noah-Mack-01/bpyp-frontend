@@ -46,3 +46,6 @@ node_modules
 .expo
 ios
 android
+
+package-lock.json
+*.lock
