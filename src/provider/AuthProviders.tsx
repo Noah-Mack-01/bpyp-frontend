@@ -21,34 +21,70 @@ const AuthContext = createContext(null as AuthenticationContext | null);
 
 export const AuthProvider = ({ children }: any) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<any | null>(null)
- 
-  async function methodWrapper<T>(func: (obj?: T) => Promise<void>, obj?: T): Promise<void> {  
+  const [isLoading, setIsLoading] = useState(false); // Start with false
+  const [error, setError] = useState<any | null>(null);
+
+  const login = async (creds: Credentials): Promise<void> => {
     setIsLoading(true);
     setError(null);
-    try { !!obj ? func(obj) : func(); }
-    catch (err) {
+    try {
+      await AUTH_API.login(creds);
+    } catch (err) {
       setError(String(err));
-      console.error(`${func?.name ?? ''} failed`, err);
+      console.error('login failed', err);
+      throw err;
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+  const register = async (creds: Credentials): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await AUTH_API.register(creds);
+    } catch (err) {
+      setError(String(err));
+      console.error('register failed', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await AUTH_API.logout();
+    } catch (err) {
+      setError(String(err));
+      console.error('logout failed', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {    
-    AUTH_API.getSession().then(({ data: { session } }) => setSession(session));    
-    AUTH_API.onAuthStateChange((_event, session) => setSession(session));
-  }, [])
+    AUTH_API.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });    
+    
+    const { data: { subscription } } = AUTH_API.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
 
-  // Value object to be provided to consumers
+    return () => subscription.unsubscribe();
+  }, []);
+
   const authContextValue: AuthenticationContext = {
     session,
     isLoading,
     error,
-    login: (creds) => methodWrapper(AUTH_API.login, creds),
-    register: (creds) => methodWrapper(AUTH_API.register, creds),
-    logout: () => methodWrapper(AUTH_API.logout),
+    login,
+    register,
+    logout,
   };
 
   return (

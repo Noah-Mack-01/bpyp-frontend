@@ -7,7 +7,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLoginSuccess = () => {
-    router.replace('/(restricted)');
+    router.replace('/');
   };
 
   return (
